@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Updated to Tailwind CSS v4 configuration with proper font variables */
 @theme inline {
