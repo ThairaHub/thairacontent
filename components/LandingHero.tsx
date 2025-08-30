@@ -25,25 +25,28 @@ export function LandingHero() {
   const fetchTrends = async (area = "general") => {
     setIsLoadingTrends(true)
     try {
-      const response = await fetch(`http://localhost:8000/trends?area=${encodeURIComponent(area)}`)
-      const data = await response.json()
-      if (data.trends) {
-        setTrendingTopics(data.trends)
+      if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
+        const response = await fetch(`http://localhost:8000/trends?area=${encodeURIComponent(area)}`)
+        const data = await response.json()
+        if (data.trends) {
+          setTrendingTopics(data.trends)
+          setIsLoadingTrends(false)
+          return
+        }
       }
     } catch (error) {
-      console.error("Failed to fetch trends:", error)
-      // Fallback to default trends
-      setTrendingTopics([
-        { topic: "AI in Marketing", engagement: "+245%", platform: "LinkedIn" },
-        { topic: "Sustainable Living", engagement: "+189%", platform: "Twitter/X" },
-        { topic: "Remote Work Tips", engagement: "+156%", platform: "Threads" },
-        { topic: "Tech Innovation", engagement: "+203%", platform: "LinkedIn" },
-        { topic: "Health & Wellness", engagement: "+178%", platform: "Twitter/X" },
-        { topic: "Digital Transformation", engagement: "+167%", platform: "Threads" },
-      ])
-    } finally {
-      setIsLoadingTrends(false)
+      console.log("[v0] Backend not available, using fallback trends")
     }
+
+    setTrendingTopics([
+      { topic: "AI in Marketing", engagement: "+245%", platform: "LinkedIn" },
+      { topic: "Sustainable Living", engagement: "+189%", platform: "Twitter/X" },
+      { topic: "Remote Work Tips", engagement: "+156%", platform: "Threads" },
+      { topic: "Tech Innovation", engagement: "+203%", platform: "LinkedIn" },
+      { topic: "Health & Wellness", engagement: "+178%", platform: "Twitter/X" },
+      { topic: "Digital Transformation", engagement: "+167%", platform: "Threads" },
+    ])
+    setIsLoadingTrends(false)
   }
 
   useEffect(() => {
