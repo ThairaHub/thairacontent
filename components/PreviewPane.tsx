@@ -4,7 +4,7 @@ import type React from "react"
 import { ContentViewer } from "./gpt-version/ContentViewer"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card } from "@/components/ui/card"
-import { FileText, X, ChevronDown, Menu, FileStack, ArrowLeft } from "lucide-react"
+import { FileText, X, ChevronDown, FileStack, ArrowLeft } from "lucide-react"
 import { useState, useMemo, useEffect } from "react"
 import type { CodeBlock, CodeStructBlock, TreeNode } from "@/lib/types"
 import { transformCodeBlocks } from "@/lib/code-structure-block"
@@ -429,64 +429,61 @@ export function PreviewPane({ messages, activeView, provider, onFilesSelected }:
           </div>
 
           {contentBlocks.length > 0 && (
-          <div className="flex flex-col space-y-1 p-2 flex-shrink-0">
-            <button
-              className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-              onClick={() => downloadCodeAsZip(allFiles)}
-            >
-              <span className="hidden sm:inline">Download All Content</span>
-              <span className="sm:hidden">Download</span>
-            </button>
+            <div className="flex flex-col space-y-1 p-2 flex-shrink-0">
+              <button
+                className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                onClick={() => downloadCodeAsZip(allFiles)}
+              >
+                <span className="hidden sm:inline">Download All Content</span>
+                <span className="sm:hidden">Download</span>
+              </button>
 
-            {versions.length > 1 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded hover:bg-secondary/80 flex items-center justify-between">
-                    <span className="text-[10px] truncate">
-                      {versions.find((v) => v.id === activeVersionId)?.name || "Select Version"}
-                    </span>
-                    <ChevronDown className="h-3 w-3 ml-1 flex-shrink-0" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-40 bg-background border border-border">
-                  {versions.map((version) => (
-                    <DropdownMenuItem
-                      key={version.id}
-                      onClick={() => handleVersionChange(version.id)}
-                      className={`cursor-pointer hover:bg-secondary/80 ${
-                        activeVersionId === version.id ? "bg-secondary text-secondary-foreground" : ""
-                      }`}
-                    >
-                      <div className="flex flex-col">
-                        <span className="text-xs font-medium">{version.name}</span>
-                        <span className="text-[10px] text-muted-foreground">
-                          {version.timestamp.toLocaleTimeString()}
-                        </span>
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
+              {versions.length > 1 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded hover:bg-secondary/80 flex items-center justify-between">
+                      <span className="text-[10px] truncate">
+                        {versions.find((v) => v.id === activeVersionId)?.name || "Select Version"}
+                      </span>
+                      <ChevronDown className="h-3 w-3 ml-1 flex-shrink-0" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-40 bg-background border border-border">
+                    {versions.map((version) => (
+                      <DropdownMenuItem
+                        key={version.id}
+                        onClick={() => handleVersionChange(version.id)}
+                        className={`cursor-pointer hover:bg-secondary/80 ${
+                          activeVersionId === version.id ? "bg-secondary text-secondary-foreground" : ""
+                        }`}
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-xs font-medium">{version.name}</span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {version.timestamp.toLocaleTimeString()}
+                          </span>
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
           )}
-
 
           <ScrollArea className="flex-1 min-h-0 p-2">
             <div className="space-y-1">
-              {contentBlocks.length > 0 ?
-               (
+              {contentBlocks.length > 0 ? (
                 contentBlocks.map((node, index) => (
-                <FileTreeNodeWithSelection
-                  key={node.filename + index}
-                  node={node}
-                  onFileClick={handleFileClick}
-                  selectedFiles={selectedFiles}
-                  onFileSelection={handleFileSelection}
-                />
-                )
-               )
-            ) :(
+                  <FileTreeNodeWithSelection
+                    key={node.filename + index}
+                    node={node}
+                    onFileClick={handleFileClick}
+                    selectedFiles={selectedFiles}
+                    onFileSelection={handleFileSelection}
+                  />
+                ))
+              ) : (
                 <div className="flex-1 flex items-center justify-center text-muted-foreground p-4">
                   <div className="text-center">
                     <FileStack className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -600,7 +597,9 @@ export function PreviewPane({ messages, activeView, provider, onFilesSelected }:
     )
   } else {
     return (
+      <div className="h-full overflow-hidden">
         <KanbanView contentBlocks={contentBlocks} />
+      </div>
     )
   }
 }
