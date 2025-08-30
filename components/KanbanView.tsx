@@ -82,7 +82,7 @@ export function KanbanView({ contentBlocks }: KanbanViewProps) {
 
                   {/* Column Content */}
                   <ScrollArea className="h-[calc(100%-60px)]">
-                    <div className="p-3 space-y-3">
+                    <div className="p-3 space-y-4">
                       {blocks.map((block, index) => (
                         <Card key={index} className={`${config.color} border transition-all hover:shadow-md`}>
                           <div className="p-3">
