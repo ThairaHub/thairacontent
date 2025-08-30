@@ -200,7 +200,7 @@ export function ContentViewer({ content, platform, contentType, onSave, filename
       )}
 
       {/* Content display - Added responsive height and better mobile scrolling */}
-      <div className="max-h-64 sm:max-h-96 overflow-y-auto">
+      <div className="max-h-80 sm:max-h-[32rem] overflow-y-auto">
         <div className="p-2 sm:p-4 space-y-4">
           {sections.map((section, index) => (
             <div key={index} className="space-y-2">

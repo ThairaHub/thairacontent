@@ -72,7 +72,7 @@ export function KanbanView({ contentBlocks }: KanbanViewProps) {
               const blocks = groupedContent[platform]
 
               return (
-                <div key={platform} className="flex-shrink-0 w-80 border-r border-border last:border-r-0">
+                <div key={platform} className="flex-shrink-0 w-96 border-r border-border last:border-r-0">
                   {/* Column Header */}
                   <div className={`p-3 border-b border-border ${config.headerColor} flex items-center space-x-2`}>
                     <Icon className="h-4 w-4" />
