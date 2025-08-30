@@ -209,7 +209,7 @@ export function ChatInterface({ input, setInput }: ChatInterfaceProps) {
   }
 
   return (
-    <div className="flex h-full bg-background relative">
+    <div className="flex h-screen bg-background relative">
       {showMobileMenu && (
         <div className="fixed inset-0 bg-black/50 z-50 lg:hidden" onClick={() => setShowMobileMenu(false)}>
           <div className="absolute top-4 right-4 bg-background border border-border rounded-lg shadow-lg p-2 min-w-[200px]">
@@ -267,7 +267,7 @@ export function ChatInterface({ input, setInput }: ChatInterfaceProps) {
 
       <div className="lg:hidden w-full pt-16">
         {mobileView === "chat" ? (
-          <div className="flex flex-col h-[calc(100vh-4rem)]">
+          <div className="flex flex-col h-[calc(100vh-64px)]">
             <div className="flex items-center justify-between p-2 border-b border-border bg-gradient-to-r from-primary/10 to-ai-glow-soft/10">
               <div className="flex items-center space-x-1">
                 <Button
@@ -399,7 +399,7 @@ export function ChatInterface({ input, setInput }: ChatInterfaceProps) {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col h-[calc(100vh-4rem)]">
+          <div className="flex flex-col h-[calc(100vh-64px)]">
             <div className="flex items-center justify-between p-2 border-b border-border">
               <h2 className="text-sm font-semibold">Content</h2>
               <div className="flex bg-message-bg rounded-lg p-0.5">
@@ -436,7 +436,7 @@ export function ChatInterface({ input, setInput }: ChatInterfaceProps) {
         )}
       </div>
 
-      <div className="hidden lg:flex h-full w-full">
+      <div className="hidden lg:flex h-screen w-full">
         <div className="flex flex-col bg-chat-bg border-r border-border w-1/3">
           <div className="flex items-center justify-between p-2 border-b border-border bg-gradient-to-r from-primary/10 to-ai-glow-soft/10">
             <div className="flex items-center space-x-2">
