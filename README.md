@@ -1,248 +1,231 @@
-# AI Code Assistant Project
+# ThairaContent - AI-Powered Social Media Content Creation Platform
 
-An advanced AI-powered code generation and preview interface that integrates with Ollama and Gemini APIs to provide real-time code generation, file structure management, and live component preview.
+A comprehensive social media content creation and management platform that combines AI-powered content generation with sophisticated content organization and publishing capabilities for X (Twitter), LinkedIn, Threads, and Medium.
 
 ## Table of Contents
 
 1. [Project Overview](#project-overview)
-2. [Code Structure Block System](#code-structure-block-system)
-3. [Architecture](#architecture)
-4. [Key Components](#key-components)
-5. [Features](#features)
-6. [Setup and Installation](#setup-and-installation)
-7. [Usage Guide](#usage-guide)
+2. [Architecture](#architecture)
+3. [Key Features](#key-features)
+4. [Core Components](#core-components)
+5. [Content Management System](#content-management-system)
+6. [AI Integration](#ai-integration)
+7. [Setup and Installation](#setup-and-installation)
+8. [Usage Guide](#usage-guide)
 
 ## Project Overview
 
-This project is a React-based application that provides an interactive interface for AI-powered code generation. It features a sophisticated file structure management system, real-time streaming responses, and live preview capabilities for React components.
+ThairaContent is a Next.js-based social media content creation platform that leverages AI to help content creators generate, organize, and publish engaging content across multiple social media platforms. The platform features trend discovery, AI-powered content generation, kanban-style content organization, and direct publishing capabilities.
 
 ### Tech Stack
-- **Frontend**: React 18, TypeScript, Tailwind CSS
+- **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS v4
 - **UI Components**: Radix UI, Shadcn/ui
 - **AI Integration**: Ollama (local), Gemini API (cloud)
-- **Code Highlighting**: Prism React Renderer
-- **File Management**: JSZip, File-saver
-- **Build Tool**: Vite
-
-## Code Structure Block System
-
-The **Code Structure Block System** is the core architecture that manages file structures and code content throughout the application. This system transforms AI-generated code responses into a hierarchical, manageable structure.
-
-### Core Types
-
-#### CodeBlock
-\`\`\`typescript
-export interface CodeBlock {
-  language: string;      // Programming language (e.g., 'tsx', 'css', 'js')
-  filename?: string;     // Optional filename with path
-  content: string;       // Actual code content
-}
-\`\`\`
-
-#### CodeStructBlock
-\`\`\`typescript
-export interface CodeStructBlock {
-  type: 'file' | 'folder';    // Block type
-  language: string;           // Language for syntax highlighting
-  filename?: string;          // Name/path of the file or folder
-  content?: string;           // Code content (for files only)
-  children?: CodeStructBlock[]; // Child blocks (for folders only)
-}
-\`\`\`
-
-### Key Modules
-
-#### 1. Code Structure Transformation (`src/lib/code-structure-block.ts`)
-
-**Purpose**: Converts flat CodeBlock arrays into hierarchical CodeStructBlock trees.
-
-**Main Functions**:
-- `transformCodeBlocks(codeBlocks: CodeBlock[]): CodeStructBlock[]`
-  - Transforms flat code blocks into nested folder/file structure
-  - Handles path parsing and hierarchy creation
-  - Cleans filename markers (removes `#` or `//` prefixes)
-
-**Algorithm**:
-1. Parse each CodeBlock filename into path components
-2. Create nested folder structure based on path hierarchy
-3. Insert files at their appropriate locations
-4. Return top-level structure
-
-**Example**:
-\`\`\`typescript
-// Input CodeBlocks
-[
-  { language: 'tsx', filename: 'src/components/App.tsx', content: '...' },
-  { language: 'css', filename: 'src/styles/main.css', content: '...' }
-]
-
-// Output CodeStructBlocks
-[
-  {
-    type: 'folder',
-    filename: 'src',
-    children: [
-      {
-        type: 'folder', 
-        filename: 'components',
-        children: [
-          { type: 'file', filename: 'App.tsx', language: 'tsx', content: '...' }
-        ]
-      },
-      {
-        type: 'folder',
-        filename: 'styles', 
-        children: [
-          { type: 'file', filename: 'main.css', language: 'css', content: '...' }
-        ]
-      }
-    ]
-  }
-]
-\`\`\`
-
-#### 2. Code Structure Merging (`src/lib/code-structure-merge.ts`)
-
-**Purpose**: Intelligently merges new CodeStructBlocks with existing ones, enabling incremental updates.
-
-**Main Functions**:
-
-- `mergeCodeStructBlocks(existing: CodeStructBlock[], newBlocks: CodeStructBlock[]): CodeStructBlock[]`
-  - **Folder Merging**: Folders with same name merge their children
-  - **File Replacement**: Files with same name get replaced with new content
-  - **Addition**: New items are added to structure
-
-- `getAllFilesFromBlocks(blocks: CodeStructBlock[]): CodeStructBlock[]`
-  - Recursively extracts all files from the hierarchical structure
-  - Used for operations like file selection and ZIP downloads
-
-**Merging Strategy**:
-\`\`\`typescript
-// Existing structure:
-[{ type: 'folder', filename: 'src', children: [existing files] }]
-
-// New structure: 
-[{ type: 'folder', filename: 'src', children: [new files] }]
-
-// Result: Merged children in 'src' folder
-[{ type: 'folder', filename: 'src', children: [existing + new files] }]
-\`\`\`
-
-#### 3. Code-to-ZIP Export (`src/lib/code-to-zip.ts`)
-
-**Purpose**: Converts CodeStructBlocks into downloadable ZIP archives.
-
-**Features**:
-- Preserves folder hierarchy
-- Handles filename normalization
-- Creates proper file structure in ZIP
-- Exports via browser download
-
-### File Tree Components
-
-#### FileTreeNode (`src/components/gpt-version/FileTreeNode.tsx`)
-- Basic file tree display
-- Folder expansion/collapse
-- File click handling
-- Visual icons for files/folders
-
-#### FileTreeNodeWithSelection (`src/components/gpt-version/FileTreeNodeWithSelection.tsx`)
-- Enhanced version with checkbox selection
-- Multi-file selection for context
-- Used in context selection for AI prompts
-
-### Integration Points
-
-#### PreviewPane Integration
-The PreviewPane component (`src/components/PreviewPane.tsx`) serves as the main consumer of the Code Structure Block system:
-
-1. **Parsing**: Extracts CodeBlocks from AI responses
-2. **Transformation**: Converts to CodeStructBlocks
-3. **Merging**: Accumulates blocks from multiple AI responses
-4. **Display**: Renders file tree and content viewer
-5. **Selection**: Manages file selection for AI context
-
-#### Chat Integration
-The ChatInterface (`src/components/ChatInterface.tsx`) uses selected files as context:
-
-\`\`\`typescript
-// Selected files are passed as context to AI
-const context = selectedFiles.map(file => 
-  `// File: ${file.filename}\n${file.content}`
-).join('\n\n');
-\`\`\`
+- **Backend**: FastAPI (Python)
+- **Database**: SQLite/PostgreSQL
+- **Content Management**: Custom kanban system
+- **Build Tool**: Next.js with Turbopack
 
 ## Architecture
 
 ### Component Hierarchy
 \`\`\`
-App
-├── Index (main page)
-├── ChatInterface
+ThairaContent App
+├── LandingHero (Entry Point & Trend Discovery)
+├── ChatInterface (AI-Powered Content Assistant)
 │   ├── ChatMessage components
-│   └── OllamaModelSelector
-└── PreviewPane
+│   ├── OllamaModelSelector
+│   └── ContentBlocksView
+├── KanbanView (Content Organization)
+│   └── ContentViewer (Content Management & Publishing)
+└── PreviewPane (Content Display & Management)
     ├── FileTreeNodeWithSelection
     ├── CodeViewer (syntax highlighting)
-    └── LivePreview (React component rendering)
+    └── RawView/Preview modes
 \`\`\`
 
 ### Data Flow
-1. **User Input** → ChatInterface
-2. **AI Request** → useOllama hook → Ollama/Gemini API
-3. **AI Response** → Parse CodeBlocks → Transform to CodeStructBlocks
-4. **Merge** → Update application state
-5. **Display** → File tree + Content viewer
-6. **Selection** → Context for next AI request
+1. **Trend Discovery** → LandingHero → Trending topics from API/fallback
+2. **Content Generation** → ChatInterface → AI providers (Ollama/Gemini)
+3. **Content Organization** → KanbanView → Platform-specific columns
+4. **Content Management** → ContentViewer → Edit, copy, publish actions
+5. **Database Integration** → FastAPI backend → Content storage and retrieval
 
-## Key Components
+## Key Features
 
-### useOllama Hook (`src/hooks/useOllama.ts`)
-- **Streaming Support**: Real-time token streaming
-- **Multi-Provider**: Ollama (local) and Gemini (cloud)
-- **Context Handling**: Accepts selected files as context
-- **Error Management**: Comprehensive error handling
+### 1. Trend Discovery & Inspiration
+- **Real-time Trending Topics**: Discover trending topics across different areas (technology, health, business, etc.)
+- **Engagement Metrics**: View engagement statistics for each trending topic
+- **Platform-Specific Trends**: See which platforms are driving specific trends
+- **One-Click Content Generation**: Click any trend to instantly generate content
 
-### LivePreview (`src/components/gpt-version/LivePreview.tsx`)
-- **Dynamic Rendering**: Renders React components from code strings
-- **Hot Module Replacement**: Updates components in real-time
-- **Babel Transformation**: Converts JSX/TSX to executable code
-- **Virtual Module System**: Manages component dependencies
+### 2. AI-Powered Content Creation
+- **Multi-Provider Support**: Choose between Ollama (local) and Gemini (cloud) AI providers
+- **Platform-Specific Optimization**: Content tailored for X (Twitter), LinkedIn, Threads, and Medium
+- **Context-Aware Generation**: Use existing content as context for new generation
+- **Streaming Responses**: Real-time content generation with live updates
+- **Specialized Prompts**: Platform-specific content structures and best practices
 
-### Virtual View System (`src/lib/virtual-view.ts`)
-- **Module Resolution**: Handles imports and dependencies
-- **Code Compilation**: Babel-based JSX/TSX transformation
-- **Error Handling**: Compilation and runtime error management
+### 3. Kanban-Style Content Organization
+- **Platform Columns**: Organize content by social media platform
+- **Visual Content Management**: Drag-and-drop style interface for content organization
+- **Color-Coded Platforms**: Each platform has distinctive visual styling
+- **Content Preview**: Quick preview of content within kanban cards
+- **Responsive Design**: Works seamlessly on desktop and mobile
 
-## Features
+### 4. Advanced Content Management
+- **In-Line Editing**: Edit content directly within the interface
+- **Copy to Clipboard**: One-click copying for easy sharing
+- **Direct Publishing**: Post content directly to social media platforms via API
+- **Content Versioning**: Track different versions of content
+- **Section Parsing**: Automatically parse content into structured sections
 
-### 1. AI Code Generation
-- **Streaming Responses**: Real-time token streaming from AI
-- **Context Awareness**: Uses selected files as context
-- **Multi-Provider Support**: Ollama (local) and Gemini (cloud)
+### 5. Database Integration
+- **Content Storage**: Persistent storage of all generated content
+- **Advanced Filtering**: Filter content by platform, date, and content type
+- **Content History**: Access previously generated content
+- **Bulk Operations**: Load and manage multiple content pieces
 
-### 2. File Structure Management
-- **Hierarchical Display**: Nested folder/file structure
-- **File Selection**: Multi-select for AI context
-- **Content Viewing**: Syntax-highlighted code display
-- **ZIP Export**: Download complete project structures
+## Core Components
 
-### 3. Live Preview
-- **React Component Rendering**: Real-time component preview
-- **Hot Updates**: Instant updates on code changes
-- **Error Handling**: Visual error display and debugging
+### LandingHero - Entry Point & Trend Discovery
+**Location**: `components/LandingHero.tsx`
 
-### 4. Code Structure Persistence
-- **Incremental Updates**: Merge new code with existing
-- **Structure Preservation**: Maintain folder hierarchy
-- **Content Management**: Handle file updates and additions
+**Features**:
+- Modern landing page with compelling statistics (10K+ creators, 500K+ posts, 95% engagement boost)
+- Trending topics discovery with search functionality
+- Area-specific trend filtering (technology, health, business, etc.)
+- One-click content generation from trending topics
+- Responsive design with mobile-first approach
+
+**Key Functions**:
+- `fetchTrends()`: Retrieves trending topics from backend API with fallback data
+- Trend area search and filtering
+- Direct integration with ChatInterface for content generation
+
+### ChatInterface - AI-Powered Content Assistant
+**Location**: `components/ChatInterface.tsx`
+
+**Features**:
+- Dual-pane layout (chat + content management)
+- Multi-provider AI support (Ollama local, Gemini cloud)
+- Context-aware content generation using selected files
+- Database integration for loading existing content
+- Advanced filtering and search capabilities
+- Mobile-responsive with adaptive layouts
+
+**Key Functions**:
+- `handleSubmit()`: Processes user input and generates AI responses
+- `loadContentFromDatabase()`: Retrieves stored content with filtering
+- Context management for AI conversations
+- Real-time streaming response handling
+
+### KanbanView - Content Organization
+**Location**: `components/KanbanView.tsx`
+
+**Features**:
+- Platform-specific columns with custom styling:
+  - **X (Twitter)**: Blue theme with Twitter icon
+  - **LinkedIn**: Professional blue theme with LinkedIn icon
+  - **Threads**: Purple theme with MessageSquare icon
+  - **Medium**: Green theme with BookOpen icon
+- Horizontal scrolling for multiple platforms
+- Content count per platform
+- Responsive card layout
+
+**Platform Configuration**:
+\`\`\`typescript
+const platformConfig = {
+  twitter: { name: "X (Twitter)", icon: Twitter, color: "bg-blue-500/10" },
+  linkedin: { name: "LinkedIn", icon: Linkedin, color: "bg-blue-600/10" },
+  threads: { name: "Threads", icon: MessageSquare, color: "bg-purple-500/10" },
+  medium: { name: "Medium", icon: BookOpen, color: "bg-green-500/10" }
+}
+\`\`\`
+
+### ContentViewer - Content Management & Publishing
+**Location**: `components/gpt-version/ContentViewer.tsx`
+
+**Features**:
+- **Content Display**: Structured content parsing with sections
+- **Editing Capabilities**: In-line content editing with save/cancel
+- **Copy Functionality**: One-click clipboard copying
+- **Direct Publishing**: API integration for posting to social platforms
+- **Status Feedback**: Real-time posting status and error handling
+- **Mobile Optimization**: Responsive design with collapsible actions
+
+**Content Parsing**:
+- Automatically detects content sections (Introduction, Current State, etc.)
+- Formats content with proper typography and spacing
+- Handles platform-specific content structures
+
+## Content Management System
+
+### Content Structure
+The platform uses a sophisticated content block system:
+
+\`\`\`typescript
+interface CodeStructBlock {
+  type: 'file' | 'folder'
+  language: string        // Platform identifier (twitter, linkedin, etc.)
+  filename?: string       // Content title/identifier
+  content?: string        // Actual content text
+  children?: CodeStructBlock[]
+}
+\`\`\`
+
+### Content Organization
+- **Platform-Based Grouping**: Content automatically organized by target platform
+- **Hierarchical Structure**: Support for nested content organization
+- **Version Management**: Track content versions and updates
+- **Metadata Handling**: Store creation dates, platform info, and content types
+
+### Database Schema
+The backend manages content with the following structure:
+- **Content Storage**: Title, platform, content type, text, version tracking
+- **Filtering Support**: Platform-based and date-based filtering
+- **API Integration**: RESTful API for content CRUD operations
+
+## AI Integration
+
+### Supported Providers
+1. **Ollama (Local)**
+   - Local AI model execution
+   - Privacy-focused content generation
+   - No API key required
+   - Models: deepseek-r1:8b, gemma2:2b, etc.
+
+2. **Gemini (Cloud)**
+   - Google's Gemini AI models
+   - Requires API key
+   - Cloud-based processing
+   - Advanced content generation capabilities
+
+### Content Generation Framework
+The platform specializes in social media content with:
+- **Platform-Specific Prompts**: Tailored for each social media platform
+- **Storytelling Structures**: Introduction, problem statement, solutions, implications
+- **Engagement Optimization**: Content designed for maximum social media engagement
+- **Context Integration**: Use existing content as context for new generation
+
+### AI Features
+- **Streaming Responses**: Real-time content generation with live updates
+- **Context Awareness**: Include selected content as context for AI
+- **Error Handling**: Comprehensive error management and fallback options
+- **Provider Switching**: Seamless switching between AI providers
 
 ## Setup and Installation
 
+### Prerequisites
+- Node.js 18+ and npm/yarn
+- Python 3.8+ (for backend)
+- Ollama (optional, for local AI)
+
+### Frontend Setup
 1. **Clone the repository**
 \`\`\`bash
 git clone <repository-url>
-cd ai-code-assistant
+cd thairacontent
 \`\`\`
 
 2. **Install dependencies**
@@ -250,96 +233,113 @@ cd ai-code-assistant
 npm install
 \`\`\`
 
-3. **Setup Ollama (optional, for local AI)**
-\`\`\`bash
-# Install Ollama
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# Pull required models
-ollama pull deepseek-r1:8b
-ollama pull gemma2:2b
-\`\`\`
-
-4. **Configure API Keys (optional, for Gemini)**
-- Add Gemini API key when prompted in the application
-
-5. **Start development server**
+3. **Start development server**
 \`\`\`bash
 npm run dev
 \`\`\`
 
+### Backend Setup (Optional)
+1. **Navigate to API directory**
+\`\`\`bash
+cd api
+\`\`\`
+
+2. **Install Python dependencies**
+\`\`\`bash
+pip install -r requirements.txt
+\`\`\`
+
+3. **Start FastAPI server**
+\`\`\`bash
+uvicorn main:app --reload --port 8000
+\`\`\`
+
+### Ollama Setup (Optional)
+1. **Install Ollama**
+\`\`\`bash
+curl -fsSL https://ollama.ai/install.sh | sh
+\`\`\`
+
+2. **Pull AI models**
+\`\`\`bash
+ollama pull deepseek-r1:8b
+ollama pull gemma2:2b
+\`\`\`
+
+### Environment Configuration
+- **Gemini API**: Add API key in the application interface
+- **Backend URL**: Configure API endpoints (defaults to localhost:8000)
+- **Database**: SQLite for development, PostgreSQL for production
+
 ## Usage Guide
 
-### Basic Workflow
+### Getting Started
+1. **Launch the Application**
+   - Open the landing page
+   - Browse trending topics or search for specific areas
+   - Click any trend to start content generation
 
-1. **Start a Conversation**
-   - Open the chat interface
-   - Select AI provider (Ollama/Gemini)
-   - Ask for code generation
+2. **Content Generation Workflow**
+   - Select AI provider (Ollama or Gemini)
+   - Enter content request or click trending topic
+   - Review generated content in real-time
+   - Edit content as needed
 
-2. **Review Generated Code**
-   - Switch to "Code" view
-   - Browse the file structure
-   - Select files to view content
+3. **Content Organization**
+   - Switch to Kanban view to see organized content
+   - Content automatically sorted by platform
+   - Use drag-and-drop for manual organization
 
-3. **Use Context Selection**
-   - Select relevant files for context
-   - Files appear in subsequent AI requests
-   - Use "Select All" or individual selection
-
-4. **Preview Components**
-   - Switch to "Preview" mode
-   - View live React component rendering
-   - See real-time updates
-
-5. **Export Code**
-   - Use "Download All Code" button
-   - Get complete project as ZIP file
+4. **Publishing Content**
+   - Use ContentViewer to review final content
+   - Copy to clipboard or publish directly
+   - Track posting status and results
 
 ### Advanced Features
 
-#### Custom Context Prompts
+#### Database Integration
+- Load existing content with advanced filtering
+- Filter by platform, date, or content type
+- Use existing content as context for new generation
+
+#### Context-Aware Generation
 \`\`\`typescript
-// Example: Using file context in prompts
-const prompt = `
-Based on the existing ${selectedFiles.length} files, 
-please add a new authentication component that integrates 
-with our current structure.
-`;
+// Example: Using existing content as context
+const context = selectedFiles.map(file => 
+  `Platform: ${file.language}\nContent: ${file.content}`
+).join('\n\n');
 \`\`\`
 
-#### Component Live Editing
-- Generated React components render immediately
-- Edit code and see instant updates
-- Debugging support with error display
+#### Custom Content Structures
+The platform supports various content structures:
+- **Twitter/X**: Short-form, engaging posts with hashtags
+- **LinkedIn**: Professional content with industry insights
+- **Threads**: Story-driven content with multiple parts
+- **Medium**: Long-form articles with structured sections
 
-## Code Structure Block System - Advanced Usage
+### Mobile Experience
+- **Responsive Design**: Optimized for mobile devices
+- **Touch-Friendly**: Large buttons and touch targets
+- **Adaptive Layout**: Different layouts for mobile vs desktop
+- **Offline Capability**: Core features work without internet (with Ollama)
 
-### Custom Transformations
-\`\`\`typescript
-// Custom block transformation
-const customBlocks = transformCodeBlocks(codeBlocks);
-const mergedBlocks = mergeCodeStructBlocks(existingBlocks, customBlocks);
-\`\`\`
+## API Documentation
 
-### File Operations
-\`\`\`typescript
-// Get all files recursively
-const allFiles = getAllFilesFromBlocks(codeStructBlocks);
+### Content Endpoints
+- `GET /content/` - Retrieve content with optional filtering
+- `POST /content/` - Create new content
+- `PUT /content/{id}` - Update existing content
+- `DELETE /content/{id}` - Delete content
 
-// Find specific file
-const targetFile = findFileByName(codeStructBlocks, 'App.tsx');
+### Trend Endpoints
+- `GET /trends?area={area}` - Get trending topics for specific area
+- `POST /post-content/` - Publish content to social media platforms
 
-// Export to ZIP
-downloadCodeAsZip(codeStructBlocks);
-\`\`\`
-
-This system provides a robust foundation for managing AI-generated code structures, enabling complex file hierarchies, incremental updates, and seamless integration with modern React development workflows.
+### Query Parameters
+- `platform`: Filter by social media platform
+- `date`: Filter by creation date
+- `content_type`: Filter by content type
 
 ---
 
-## Original Lovable Project Information
-
-**URL**: https://lovable.dev/projects/f2541fac-1827-4e17-ba6b-99b290fd0192
-
-This project was built with Lovable and can be edited directly at the project URL or locally using your preferred IDE.
+**ThairaContent** - Empowering content creators with AI-driven social media content generation and management.

@@ -1,4 +1,3 @@
-import * as Babel from "@babel/standalone"
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 
 export interface VirtualModule {
@@ -22,8 +21,18 @@ const builtinModules: Record<string, any> = {
   },
 }
 
-export function registerModules(modules: VirtualModule[]) {
+async function loadBabel() {
+  if (typeof window === "undefined") {
+    throw new Error("Babel transformation should only run client-side")
+  }
+  const Babel = await import("@babel/standalone")
+  return Babel
+}
+
+export async function registerModules(modules: VirtualModule[]) {
   moduleRegistry = { ...builtinModules } // reset with builtins
+
+  const Babel = await loadBabel()
 
   modules.forEach((mod) => {
     try {
